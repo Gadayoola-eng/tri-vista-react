@@ -3,36 +3,38 @@ import emailjs from "@emailjs/browser";
 import WhatsAppButton from "../components/WhatsAppButton";
 
 function Contact() {
-  const form = useRef();
+  const form = useRef(null);
   const [status, setStatus] = useState("");
   const [sending, setSending] = useState(false);
 
   const sendEmail = async (e) => {
     e.preventDefault();
 
+    if (sending) return;
+
     setSending(true);
     setStatus("Sending message...");
 
     try {
       const response = await emailjs.sendForm(
-        "service_n2dfov8",
-        "template_pasu836",
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         form.current,
         {
-          publicKey: "J6sMDZ4L0-nVPpTds",
+          publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
         },
       );
 
-      console.log("EmailJS SUCCESS:", response);
+      console.log("EMAILJS SUCCESS:", response.status, response.text);
 
-      setStatus("✓ Message sent successfully! We'll get back to you soon.");
+      setStatus("✓ Message sent successfully! We will get back to you soon.");
 
       form.current.reset();
     } catch (error) {
-      console.error("EmailJS ERROR:", error);
+      console.error("EMAILJS ERROR:", error);
 
       setStatus(
-        `✕ Failed to send message. ${error?.text || "Please try again later."}`,
+        `✕ Failed to send message: ${error?.text || "Please try again later."}`,
       );
     } finally {
       setSending(false);
@@ -44,95 +46,64 @@ function Contact() {
       {/* CONTACT SECTION */}
       <section className="py-20 md:py-28 px-6">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12">
-          {/* =========================
-              LEFT SIDE
-          ========================== */}
-
+          {/* LEFT SIDE */}
           <div className="flex flex-col justify-center">
             <span className="text-blue-600 font-semibold uppercase tracking-wider">
               Get In Touch
             </span>
 
-            <h1 className="text-4xl md:text-6xl font-bold mt-3 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mt-3 mb-6">
               We'd Love To Hear From You
             </h1>
 
-            <p className="text-gray-600 text-lg leading-relaxed mb-10 max-w-xl">
+            <p className="text-gray-600 text-lg leading-relaxed mb-10">
               Whether you need a new website, mobile application, networking
-              solution, software development or technical support, send us a
-              message and we'll get back to you.
+              solution, software development, or technical support, send us a
+              message and our team will get back to you.
             </p>
 
-            {/* CONTACT INFORMATION */}
-
-            <div className="space-y-6">
-              {/* EMAIL */}
-
-              <div className="flex items-start gap-4">
-                <div
-                  className="w-12 h-12 shrink-0 rounded-xl
-                             bg-blue-100 text-blue-600
-                             flex items-center justify-center text-xl"
-                >
-                  ✉️
-                </div>
-
-                <div>
-                  <h3 className="font-bold text-lg">Email</h3>
-
-                  <p className="text-gray-600">
-                    trivistabusinesssolution@gmail.com
-                  </p>
-                </div>
+            {/* EMAIL */}
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+                ✉️
               </div>
 
-              {/* PHONE */}
+              <div>
+                <h3 className="font-bold text-lg">Email</h3>
 
-              <div className="flex items-start gap-4">
-                <div
-                  className="w-12 h-12 shrink-0 rounded-xl
-                             bg-blue-100 text-blue-600
-                             flex items-center justify-center text-xl"
-                >
-                  📞
-                </div>
+                <p className="text-gray-600">Your Email Address</p>
+              </div>
+            </div>
 
-                <div>
-                  <h3 className="font-bold text-lg">Phone</h3>
-
-                  <p className="text-gray-600">+234 706 420 9935</p>
-                </div>
+            {/* PHONE */}
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
+                📞
               </div>
 
-              {/* WHATSAPP */}
+              <div>
+                <h3 className="font-bold text-lg">Phone</h3>
 
-              <div className="flex items-start gap-4">
-                <div
-                  className="w-12 h-12 shrink-0 rounded-xl
-                             bg-green-100 text-green-600
-                             flex items-center justify-center text-xl"
-                >
-                  💬
-                </div>
+                <p className="text-gray-600">+234 706 420 9935</p>
+              </div>
+            </div>
 
-                <div>
-                  <h3 className="font-bold text-lg">WhatsApp</h3>
+            {/* WHATSAPP */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-xl">
+                💬
+              </div>
 
-                  <p className="text-gray-600">Chat with us directly</p>
-                </div>
+              <div>
+                <h3 className="font-bold text-lg">WhatsApp</h3>
+
+                <p className="text-gray-600">Chat with us directly</p>
               </div>
             </div>
           </div>
 
-          {/* =========================
-              CONTACT FORM
-          ========================== */}
-
-          <div
-            className="bg-white border border-gray-100
-                       rounded-3xl p-7 md:p-10
-                       shadow-xl"
-          >
+          {/* FORM */}
+          <div className="bg-white border border-gray-100 rounded-3xl p-7 md:p-10 shadow-xl">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">
               Send Us a Message
             </h2>
@@ -143,7 +114,6 @@ function Contact() {
 
             <form ref={form} onSubmit={sendEmail} className="space-y-5">
               {/* NAME */}
-
               <div>
                 <label htmlFor="from_name" className="block font-semibold mb-2">
                   Your Name
@@ -155,18 +125,11 @@ function Contact() {
                   name="from_name"
                   placeholder="Enter your name"
                   required
-                  className="w-full px-4 py-3 rounded-xl
-                             border border-gray-200
-                             outline-none
-                             focus:border-blue-600
-                             focus:ring-2
-                             focus:ring-blue-100
-                             transition"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
 
               {/* EMAIL */}
-
               <div>
                 <label
                   htmlFor="from_email"
@@ -181,18 +144,11 @@ function Contact() {
                   name="from_email"
                   placeholder="you@example.com"
                   required
-                  className="w-full px-4 py-3 rounded-xl
-                             border border-gray-200
-                             outline-none
-                             focus:border-blue-600
-                             focus:ring-2
-                             focus:ring-blue-100
-                             transition"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
 
               {/* MESSAGE */}
-
               <div>
                 <label htmlFor="message" className="block font-semibold mb-2">
                   Your Message
@@ -201,42 +157,30 @@ function Contact() {
                 <textarea
                   id="message"
                   name="message"
-                  placeholder="Tell us how we can help..."
                   rows="6"
+                  placeholder="Tell us how we can help..."
                   required
-                  className="w-full px-4 py-3 rounded-xl
-                             border border-gray-200
-                             outline-none
-                             resize-none
-                             focus:border-blue-600
-                             focus:ring-2
-                             focus:ring-blue-100
-                             transition"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none resize-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
 
-              {/* SEND BUTTON */}
-
+              {/* BUTTON */}
               <button
                 type="submit"
                 disabled={sending}
-                className={`w-full text-white py-4
-                           rounded-xl font-semibold
-                           transition duration-300
-                           ${
-                             sending
-                               ? "bg-gray-400 cursor-not-allowed"
-                               : "bg-blue-600 hover:bg-blue-700"
-                           }`}
+                className={`w-full py-4 rounded-xl font-semibold text-white transition ${
+                  sending
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
               >
                 {sending ? "Sending..." : "Send Message →"}
               </button>
 
-              {/* STATUS MESSAGE */}
-
+              {/* STATUS */}
               {status && (
                 <div
-                  className={`text-center font-semibold mt-4 p-3 rounded-xl ${
+                  className={`text-center font-semibold p-3 rounded-xl ${
                     status.startsWith("✓")
                       ? "bg-green-50 text-green-600"
                       : status.startsWith("✕")
@@ -251,8 +195,6 @@ function Contact() {
           </div>
         </div>
       </section>
-
-      {/* WHATSAPP */}
 
       <WhatsAppButton />
     </main>
